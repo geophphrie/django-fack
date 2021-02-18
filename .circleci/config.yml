@@ -12,13 +12,32 @@ executors:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
+        environment:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+          PYTHONWARNINGS: Ignore::DeprecationWarning
+  py3exec:
+    description: Image for Python 3
+    docker:
+      - image: 'cimg/python:3.8'
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
 
 jobs:
-  build:
+  buildpy2:
     executor: py2exec
     steps:
       - checkout
-      - run: echo "Using dockerhub user = $DOCKERHUB_USER"
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: dev-requirements.txt
+
+  buildpy3:
+    executor: py3exec
+    steps:
+      - checkout
       - python/install-packages:
           pkg-manager: pip
           pip-dependency-file: dev-requirements.txt
@@ -30,6 +49,9 @@ jobs:
 workflows:
   main:
     jobs:
-    - build:
+    - buildpy2:
+        context:
+          - geophphrie
+    - buildpy3:
         context:
           - geophphrie
