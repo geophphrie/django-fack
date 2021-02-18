@@ -8,8 +8,9 @@ executors:
     description: Image for Python 2
     docker:
       - image: 'cimg/python:2.7'
+        # auth is now set up using a context in the workflow job
         auth:
-          username: geophphrie
+          username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
 
 jobs:
@@ -17,16 +18,18 @@ jobs:
     executor: py2exec
     steps:
       - checkout
+      - run: echo "Using dockerhub user = $DOCKERHUB_USER"
       - python/install-packages:
           pkg-manager: pip
           pip-dependency-file: dev-requirements.txt
 
 #    - run:
-#          command: ./manage.py test
-#          name: Test
+#      command: ./manage.py test
+#      name: Test
   
 workflows:
   main:
     jobs:
-      - build
-
+    - build:
+        context:
+          - geophphrie
