@@ -1,24 +1,32 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@
+  python: circleci/python@1.3.2
+
+executors:
+  py2exec:
+    description: Image for Python 2
+    docker:
+      - image: 'cimg/python:2.7'
+        auth:
+          username: geophphrie
+          password: $DOCKERHUB_PASSWORD
 
 jobs:
-  build-and-test:
-    executor: python/default
+  build:
+    executor: py2exec
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
+      - python/install-packages:
+          pkg-manager: pip
           pip-dependency-file: dev-requirements.txt
-	  version: 2.7
-      - python/save-cache
 
 #    - run:
 #          command: ./manage.py test
 #          name: Test
-
+  
 workflows:
   main:
     jobs:
-      - build-and-test
+      - build
+
