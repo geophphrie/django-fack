@@ -1,0 +1,57 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.3.2
+
+executors:
+  py2exec:
+    description: Image for Python 2
+    docker:
+      - image: 'cimg/python:2.7'
+        # auth is now set up using a context in the workflow job
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+          PYTHONWARNINGS: Ignore::DeprecationWarning
+  py3exec:
+    description: Image for Python 3
+    docker:
+      - image: 'cimg/python:3.8'
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+jobs:
+  buildpy2:
+    executor: py2exec
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: dev-requirements.txt
+
+  buildpy3:
+    executor: py3exec
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: dev-requirements.txt
+
+#    - run:
+#      command: ./manage.py test
+#      name: Test
+  
+workflows:
+  main:
+    jobs:
+    - buildpy2:
+        context:
+          - geophphrie
+    - buildpy3:
+        context:
+          - geophphrie
