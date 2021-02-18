@@ -11,3 +11,4 @@ Other contributors:
     * Rock Howard
     * Sean O'Connor
     * Frank Wiles
+    * Jeffrey Cross
